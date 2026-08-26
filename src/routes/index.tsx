@@ -248,16 +248,16 @@ function Index() {
           </div>
 
           <div className="hero-entrance" style={{ animationDelay: "450ms" }}>
-            <ul className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4 text-[11px] leading-tight font-medium tracking-wide uppercase">
+            <ul className="mt-10 flex flex-wrap items-center justify-center gap-x-4 gap-y-3 text-[10px] leading-tight font-medium tracking-wide uppercase">
               {[
                 { Icon: Leaf, a: "100%", b: "Pure" },
                 { Icon: Hexagon, a: "Natural &", b: "Raw" },
                 { Icon: Droplets, a: "Rich in", b: "Nutrients" },
               ].map(({ Icon, a, b }, i) => (
-                <li key={a} className="flex items-center gap-3">
-                  {i > 0 ? <span className="h-8 w-px bg-gold/25" aria-hidden="true" /> : null}
-                  <Icon className="h-5 w-5 shrink-0 text-gold" aria-hidden="true" />
-                  <span>
+                <li key={a} className="flex items-center gap-2 whitespace-nowrap">
+                  {i > 0 ? <span className="h-7 w-px bg-gold/25" aria-hidden="true" /> : null}
+                  <Icon className="h-4 w-4 shrink-0 text-gold" aria-hidden="true" />
+                  <span className="leading-snug">
                     {a}
                     <br />
                     {b}

@@ -117,7 +117,7 @@ export function SiteHeader({ active = "Home", children }: SiteHeaderProps) {
               aria-hidden="true"
             />
             <div
-              className="fixed top-0 right-0 z-50 w-full max-w-sm h-full bg-ink text-ink-foreground shadow-xl transform transition-transform duration-300 ease-out lg:hidden"
+              className="fixed top-0 right-0 z-50 w-[85%] max-w-[90vw] h-full bg-ink text-ink-foreground shadow-xl transform transition-transform duration-300 ease-out lg:hidden"
               role="dialog"
               aria-modal="true"
               aria-label="Navigation menu"

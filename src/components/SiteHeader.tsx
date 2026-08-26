@@ -1,5 +1,5 @@
-import { useState, type ReactNode } from "react";
-import { Hexagon, Heart, Truck, Menu } from "lucide-react";
+import { useState, useEffect, type ReactNode } from "react";
+import { Hexagon, Heart, Truck, Menu, X } from "lucide-react";
 
 import logo from "@/assets/logo.png";
 import hero from "@/assets/hero-honey.jpg";
@@ -8,7 +8,6 @@ const navLinks = ["Home", "Honey", "Bee Farming", "About Us", "Contact"];
 
 function navHref(label: string): string {
   if (label === "Home") return "/";
-  // Section anchors on the home page
   if (label === "Honey") return "/#varieties";
   if (label === "Bee Farming") return "/#supplies";
   if (label === "About Us") return "/about";
@@ -17,31 +16,33 @@ function navHref(label: string): string {
 }
 
 interface SiteHeaderProps {
-  /** Nav label to highlight as the current page, e.g. "Home" | "About Us" | "Contact". */
   active?: string;
-  /** Page-specific hero content rendered below the shared navbar. */
   children?: ReactNode;
 }
 
-/**
- * Shared site header used by every page:
- * 1. Yellow announcement bar
- * 2. Hero banner with background image and the full navbar
- *    (logo, links with active highlighting, search/account/cart, mobile menu)
- *
- * Page content passes its own headline block as `children`.
- */
 export function SiteHeader({ active = "Home", children }: SiteHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
+  const closeMenu = () => setMenuOpen(false);
+
   return (
     <>
-      {/* Announcement bar */}
       <div className="bg-gold text-primary-foreground">
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-1 px-4 py-2 text-center text-[11px] font-medium tracking-wide sm:grid-cols-3 sm:text-left">
           <p className="flex items-center justify-center gap-2 sm:justify-start">
             <Hexagon className="h-3 w-3 shrink-0" aria-hidden="true" />
-            100% PURE &amp; NATURAL HONEY
+            100% PURE & NATURAL HONEY
           </p>
           <p className="hidden items-center justify-center gap-2 sm:flex">
             <Heart className="h-3 w-3 shrink-0" aria-hidden="true" />
@@ -54,7 +55,6 @@ export function SiteHeader({ active = "Home", children }: SiteHeaderProps) {
         </div>
       </div>
 
-      {/* Hero banner + navbar */}
       <header className="relative isolate overflow-hidden bg-ink text-ink-foreground">
         <img
           src={hero}
@@ -69,7 +69,6 @@ export function SiteHeader({ active = "Home", children }: SiteHeaderProps) {
         />
 
         <div className="relative mx-auto max-w-7xl px-4">
-          {/* Nav */}
           <nav className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 py-4 lg:grid-cols-[auto_1fr_auto]">
             <a href="/" className="flex min-w-0 items-center">
               <img src={logo} alt="Honey logo" width={56} height={56} className="h-12 w-12" />
@@ -99,7 +98,7 @@ export function SiteHeader({ active = "Home", children }: SiteHeaderProps) {
               </a>
               <button
                 aria-label="Menu"
-                onClick={() => setMenuOpen((v) => !v)}
+                onClick={() => setMenuOpen(true)}
                 className="grid h-11 w-11 place-items-center rounded-sm transition-colors hover:text-gold lg:hidden"
               >
                 <Menu className="h-5 w-5" />
@@ -107,25 +106,59 @@ export function SiteHeader({ active = "Home", children }: SiteHeaderProps) {
             </div>
           </nav>
 
-          {menuOpen ? (
-            <ul className="flex flex-col gap-3 border-t border-gold/20 py-4 text-xs tracking-[0.12em] uppercase lg:hidden">
-              {navLinks.map((label) => (
-                <li key={label}>
-                  <a
-                    href={navHref(label)}
-                    onClick={() => setMenuOpen(false)}
-                    className={`block py-2 transition-colors hover:text-gold ${label === active ? "text-gold" : ""}`}
-                  >
-                    {label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-
-          {/* Page-specific hero content */}
           {children}
         </div>
+
+        {menuOpen && (
+          <>
+            <div
+              className="fixed inset-0 z-40 bg-black/50 transition-opacity duration-300 ease-out lg:hidden"
+              onClick={closeMenu}
+              aria-hidden="true"
+            />
+            <div
+              className="fixed top-0 right-0 z-50 w-full max-w-sm h-full bg-ink text-ink-foreground shadow-xl transform transition-transform duration-300 ease-out lg:hidden"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Navigation menu"
+            >
+              <div className="flex items-center justify-between border-b border-gold/20 px-6 py-4">
+                <img src={logo} alt="Honey logo" width={40} height={40} className="h-10 w-10" />
+                <button
+                  onClick={closeMenu}
+                  aria-label="Close menu"
+                  className="grid h-10 w-10 place-items-center rounded-sm transition-colors hover:text-gold"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <nav className="p-6">
+                <ul className="flex flex-col gap-4">
+                  {navLinks.map((label) => (
+                    <li key={label}>
+                      <a
+                        href={navHref(label)}
+                        onClick={closeMenu}
+                        className={`block text-lg font-medium tracking-[0.12em] uppercase transition-colors hover:text-gold ${
+                          label === active ? "text-gold" : ""
+                        }`}
+                      >
+                        {label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+                <a
+                  href="/contact"
+                  onClick={closeMenu}
+                  className="btn-gold mt-6 inline-flex w-full items-center justify-center gap-2 rounded-sm px-6 py-3.5 text-[11px] font-semibold tracking-[0.15em] uppercase"
+                >
+                  Request Sample
+                </a>
+              </nav>
+            </div>
+          </>
+        )}
       </header>
     </>
   );

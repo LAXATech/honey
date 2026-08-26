@@ -11,32 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportHoneyError } from "../lib/honey-error-reporting";
-
-function HydrationLoadingShell() {
-  return (
-    <div
-      id="hydration-loading"
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-background px-4"
-      role="status"
-      aria-live="polite"
-      aria-label="Loading..."
-    >
-      <div className="text-center space-y-3">
-        <p className="eyebrow text-gold/80">Please wait</p>
-        <h2 className="text-3xl md:text-4xl font-display font-medium text-foreground">
-          Loading...
-        </h2>
-        <div className="gold-rule mx-auto" />
-      </div>
-      <div
-        className="w-full max-w-xs h-1.5 bg-muted rounded-full overflow-hidden"
-        aria-hidden="true"
-      >
-        <div className="h-full w-1/4 bg-gold animate-shimmer" style={{ animationDelay: "0s" }} />
-      </div>
-    </div>
-  );
-}
+import { PremiumPreloader } from "@/components/PremiumPreloader";
 
 function NotFoundComponent() {
   return (
@@ -135,21 +110,9 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <HydrationLoadingShell />
+        <PremiumPreloader />
         {children}
         <Scripts />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                var loading = document.getElementById('hydration-loading');
-                if (loading) {
-                  loading.style.display = 'none';
-                }
-              })();
-            `,
-          }}
-        />
       </body>
     </html>
   );

@@ -164,6 +164,7 @@ function Index() {
     useScrollAnimation<HTMLDivElement>();
   // Testimonials carousel: 1 card per view on mobile, 3 on desktop (md+).
   const [perView, setPerView] = useState(3);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
@@ -178,6 +179,31 @@ function Index() {
   useEffect(() => {
     setSlide((s) => Math.min(s, testimonials.length - perView));
   }, [perView]);
+
+  // Touch swipe handlers for mobile carousel
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStart === null) return;
+    const touchEnd = e.touches[0].clientX;
+    const diff = touchStart - touchEnd;
+    const minSwipeDistance = 50;
+
+    if (Math.abs(diff) > minSwipeDistance) {
+      if (diff > 0 && slide < testimonials.length - perView) {
+        setSlide((s) => s + 1);
+      } else if (diff < 0 && slide > 0) {
+        setSlide((s) => s - 1);
+      }
+      setTouchStart(null);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setTouchStart(null);
+  };
   const { ref: trainingRef, isVisible: trainingVisible } = useScrollAnimation<HTMLDivElement>();
   const { ref: footerRef, isVisible: footerVisible } = useScrollAnimation<HTMLElement>();
 
@@ -236,6 +262,9 @@ function Index() {
               className="request-sample-text mt-4"
               role="link"
               tabIndex={0}
+              onClick={() => {
+                window.location.href = "/contact";
+              }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
@@ -248,15 +277,17 @@ function Index() {
           </div>
 
           <div className="hero-entrance" style={{ animationDelay: "450ms" }}>
-            <ul className="mt-10 flex flex-wrap items-center justify-center gap-x-4 gap-y-3 text-[10px] leading-tight font-medium tracking-wide uppercase">
+            <ul className="mt-10 flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-3 text-[10px] leading-tight font-medium tracking-wide uppercase md:text-[11px] md:gap-x-6 md:gap-y-4 md:w-auto md:ml-0">
               {[
                 { Icon: Leaf, a: "100%", b: "Pure" },
                 { Icon: Hexagon, a: "Natural &", b: "Raw" },
                 { Icon: Droplets, a: "Rich in", b: "Nutrients" },
               ].map(({ Icon, a, b }, i) => (
-                <li key={a} className="flex items-center gap-2 whitespace-nowrap">
-                  {i > 0 ? <span className="h-7 w-px bg-gold/25" aria-hidden="true" /> : null}
-                  <Icon className="h-4 w-4 shrink-0 text-gold" aria-hidden="true" />
+                <li key={a} className="flex items-center gap-2 whitespace-nowrap md:gap-3">
+                  {i > 0 ? (
+                    <span className="h-7 w-px bg-gold/25 md:h-8" aria-hidden="true" />
+                  ) : null}
+                  <Icon className="h-4 w-4 shrink-0 text-gold md:h-5 md:w-5" aria-hidden="true" />
                   <span className="leading-snug">
                     {a}
                     <br />
@@ -517,7 +548,12 @@ function Index() {
                 transform: testimonialsVisible ? "translateY(0)" : "translateY(30px)",
               }}
             >
-              <div className="overflow-hidden">
+              <div
+                className="overflow-hidden"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
                 <div
                   className="flex transition-transform duration-500 ease-out"
                   style={{ transform: `translateX(-${(slide * 100) / perView}%)` }}

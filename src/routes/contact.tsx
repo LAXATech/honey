@@ -155,20 +155,8 @@ function Contact() {
               a training program — our team is here to help.
             </p>
           </div>
-          {/* Mobile only: styled text */}
-          <span
-            className="request-sample-text mt-8"
-            role="link"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                window.location.href = "/contact";
-              }
-            }}
-          >
-            Request Sample
-          </span>
+          {/* Desktop only: styled text */}
+          <span className="request-sample-text mt-8 md:hidden">Request Sample</span>
           <style>{`
             .hero-entrance {
               opacity: 0;
